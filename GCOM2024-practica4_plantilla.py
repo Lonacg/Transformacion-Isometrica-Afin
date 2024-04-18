@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Created on Tue Mar 10 18:58:33 2020
 
@@ -30,13 +29,14 @@ https://matplotlib.org/stable/gallery/mplot3d/subplot3d.html
 """
 
 
+
 ############################################################################    
 #  APARTADO I)
 ############################################################################ 
 
 
 
-# Genera una figura 3D (la gragfica de la funcion sen(linea 43))
+# Genera una figura 3D (la grafica de la funcion sen(linea 43))
 fig = plt.figure(figsize=plt.figaspect(0.5))
 
 # plot a 3D surface like in the example mplot3d/surface3d_demo
