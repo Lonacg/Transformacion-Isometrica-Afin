@@ -49,22 +49,39 @@ de σ.
 #APARTADO 1 
 ################################################################# 
 
-#Construcción de la figura que vamos a estudiar
+def make_figure():
+    # Figura para rotar y trasladar:
+    fig = plt.figure()
+    ax = plt.axes(projection='3d')
+    plt.title("Figura elegida para rotar y trasladar")
+
+    X, Y, Z = axes3d.get_test_data(0.05) # Ejemplo utilizado https://matplotlib.org/stable/api/_as_gen/mpl_toolkits.mplot3d.axes3d.get_test_data.html
+
+    cset = ax.contour(X, Y, Z, 15, extend3d=True,cmap = cm.coolwarm) 
+    ax.clabel(cset, fontsize=9, inline=1)
+
+    plt.show()
 
 
-fig = plt.figure()
-ax = plt.axes(projection='3d')
-
-# Estilo de la grafica
-X, Y, Z = axes3d.get_test_data(0.05)
-cset = ax.contour(X, Y, Z, 16, extend3d=True,cmap = plt.cm.get_cmap('viridis'))
-ax.clabel(cset, fontsize=9, inline=1)
+    x0 = X.reshape(-1)
+    y0 = Y.reshape(-1)
+    z0 = Z.reshape(-1)
 
 
-#ax.clabel(surf, fontsize=9, inline=1)
-plt.title("Figura elegida para rotar y trasladar")
-plt.show()
+    H = np.array([x0,y0,z0]).T
+    hull = ConvexHull(H)
+    vertices = hull.vertices
+    x, y, z = [], [], []
+    for i in vertices:
+        x.append(x0[i])
+        y.append(y0[i])
+        z.append(z0[i])
 
+    d = diameter(x, y, z) 
+
+    centroid = [X.mean(), Y.mean(), Z.mean()]
+    
+    return [X, Y, Z, d, centroid ]
 
 
 
@@ -94,8 +111,20 @@ def diameter(x, y, z):
 
 
 
-def transf_apartado1(x, y, z, M, v= np.array([0, 0, 0])):
-    
+def transf_2D_1(x, y, z, M, v= np.array([0, 0, 0])):
+    '''
+    Calcula el diametro maximo entre 2 ptos de la figura
+
+    Returns a float object 
+
+    Arguments:
+        x -> list (componentes x de cada vertice de la envolvente convexa menos su centroide)
+        y -> list (componentes y de cada vertice de la envolvente convexa menos su centroide) 
+        z -> list (componentes z de cada vertice de la envolvente convexa menos su centroide)
+        M -> array (matriz M de rotacion)
+        v -> array (vector de transformacion)
+
+    '''    
     n = len(x)
 
     xt = np.zeros(shape= (n, n))
@@ -112,31 +141,15 @@ def transf_apartado1(x, y, z, M, v= np.array([0, 0, 0])):
     return xt, yt, zt
 
 
-##  CÁLCULO DE LA ENVOLVENTE CONVEXA, SUS VÉRTICES Y EL DIÁMETRO MAYOR.  ##    
-
-x0 = X.reshape(-1)
-y0 = Y.reshape(-1)
-z0 = Z.reshape(-1)
+##  CÁLCULO DE LA ENVOLVENTE CONVEXA, SUS VÉRTICES Y EL DIÁMETRO MAYOR.  #  
 
 
-H = np.array([x0,y0,z0]).T
-hull = ConvexHull(H)
-vertices = hull.vertices
-x, y, z = [], [], []
 
-for i in vertices:
-    x.append(x0[i])
-    y.append(y0[i])
-    z.append(z0[i])
 
-d = diameter(x,y,z) #159.65273090569917
-
-# Centroide 
-centroid = [X.mean(), Y.mean(), Z.mean()]
 
 
 ##   CREACIÓN DEL GIF.  ##
-def animate1(t):
+def animate1(t, X, Y, Z, d, centroid):
 
     # Creamos la matriz M de rotacion con theta 3*pi
     coseno = math.cos(3 * math.pi * t)
@@ -146,24 +159,25 @@ def animate1(t):
     # Translacion v = (0, 0, d)
     v = np.array([0, 0, d]) * t
 
+    ax.clear()
     ax = plt.axes(xlim=(0,400), ylim=(0,400), projection='3d')
 
     ax.set_xlim(-60, 60)
     ax.set_ylim(-60, 60)
     ax.set_zlim(-60, 250)
 
-    x,y,z = transf_apartado1(X - centroid[0], Y - centroid[1], Z - centroid[2], M=M, v=v)
+    x, y, z = transf_2D_1(X - centroid[0], Y - centroid[1], Z - centroid[2], M= M, v= v)
     
-    ax.contour(x, y, z, 16, extend3d=True,cmap = plt.cm.get_cmap('viridis'))
+    ax.contour(x, y, z, 15, extend3d= True, cmap= plt.cm.get_cmap('viridis'))
     
     return ax
 
+def create_animation_1(X, Y, Z, )
 
+    fig = plt.figure(figsize=(6,6))
+    ani = animation.FuncAnimation(fig, animate1, np.arange(0, 1, 0.025), fargs=[X, Y, Z, d, centroid, ax], interval=20)
 
-fig = plt.figure(figsize=(6,6))
-ani = animation.FuncAnimation(fig, animate1, np.arange(0, 1, 0.025), interval=20)
-
-ani.save("apartado1.gif", fps = 10)  
+    ani.save("apartado1.gif", fps = 10)  
 
 
 
