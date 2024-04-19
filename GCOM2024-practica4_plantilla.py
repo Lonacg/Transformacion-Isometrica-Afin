@@ -14,10 +14,7 @@ from skimage import io, color
 # Importante: El módulo skimage requiere tener instalado:
 # la librería scikit-image (por ejemplo con Anaconda o pip)
 
-vuestra_ruta = ""
 
-os.getcwd()
-os.chdir(vuestra_ruta)
 
 
 """
@@ -48,15 +45,6 @@ Y = np.arange(-5, 5, 0.1)   # malla de y
 X, Y = np.meshgrid(X, Y)    # construye la malla 2 dimensional
 
 
-# En estas dimensiones, el diametro mayor es la diagonal del cuadrado -5 a 5 son 10 (2 veces), y de -1 a 1 son 2, luego es la raiz de 204 (sqrt(10^2 + 10^2 + 2^2))
-
-R = -np.sqrt(X**2/2 + Y**2/4) #funciones R y Z
-Z = np.sin(R)
-
-surf = ax.plot_surface(X, Y, Z, rstride=1, cstride=1, cmap=cm.coolwarm, 
-                       linewidth=0, antialiased=False) # Ploteamos Z en funcion de X y Y
-ax.set_zlim(-2.01, 1.01)
-fig.colorbar(surf, shrink=0.5, aspect=10)
 
 plt.show()
 """
@@ -96,7 +84,7 @@ def transf1D(x,y,z,M, v=np.array([0,0,0])):
     return xt, yt, zt
 
 
-
+'''
 """
 Segundo apartado casi regalado
 
@@ -242,3 +230,4 @@ os.getcwd()
 
 
 
+'''
