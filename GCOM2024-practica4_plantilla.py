@@ -93,7 +93,7 @@ def transf1D(x,y,z,M, v=np.array([0,0,0])):
     return xt, yt, zt
 
 
-'''
+
 """
 Segundo apartado casi regalado
 
@@ -239,4 +239,3 @@ os.getcwd()
 
 
 
-'''

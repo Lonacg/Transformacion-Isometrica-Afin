@@ -233,7 +233,32 @@ def make_gif(X, Y, Z, n_frames, thetas, vs, v):
 #APARTADO 2 
 ############################################################################ 
 
+def get_coord(img, ):
 
+    # Obtenemos los puntos de la imagen
+    img = io.imread('arbol.png')
+
+    xyz = img.shape
+
+    x = np.arange(0, xyz[0], 1)
+    y = np.arange(0, xyz[1], 1)
+
+    xx,yy = np.meshgrid(x, y)
+    xx = np.asarray(xx).reshape(-1)
+    yy = np.asarray(yy).reshape(-1)
+
+    z  = img[:, :, 2]
+    z = np.transpose(z)
+    zz = np.asarray(z).reshape(-1)
+
+    # Nos quedamos con los azules >= a = 100
+    x0 = xx[yy < 240]
+    y0 = yy[yy < 240] / 256.  # -> normalizar los datos entre 0, 1.
+    z0 = zz[yy < 240]
+
+    ##### Se normalizan los datos de yy o zz?????????????????????????
+
+    return x0, y0, z0
 
 
 
@@ -253,7 +278,7 @@ def main():
     una rotación de θ = 3π y una translación con v = (0, 0, d), donde d es 
     el diámetro mayor de S.
     '''
-
+    '''
     X, Y, Z = axes3d.get_test_data(0.1)        # Ejemplo utilizado https://matplotlib.org/stable/api/_as_gen/mpl_toolkits.mplot3d.axes3d.get_test_data.html
     # X es una matriz que contiene las coordenadas de los puntos en el eje x
     # Y es una matriz que contiene las coordenadas de los puntos en el eje y
@@ -275,19 +300,22 @@ def main():
     gif = make_gif(X, Y, Z, n_frames, thetas, vs, v)
     gif.save("gif_ej1.gif", fps = 10)  
     plt.show()
-
+    '''
     
     print('APARTADO II)')
     '''
     Dado el sistema representado por la imagen digital 
-    ‘hurricane-isabel.png’, considera el subsistema σ dado por el tercer 
+    ‘hurricane-isabel.png’, considera el subsistema sigma dado por el tercer 
     color correspondiente al azul ∈ [0, 254], pero restringiendo para 
     azul ≥ 100. ¿Dónde se sitúa el centroide? Realiza la misma 
     transformación que en el apartado anterior, con θ = 6π y v = (d, d, 0), 
     donde d es el diámetro mayor de σ.
     '''
+    img = io.imread('hurricane-isabel.png')
 
+    x0, y0, z0 = get_coord(img)
 
+    
 
 
 if __name__ == '__main__':
