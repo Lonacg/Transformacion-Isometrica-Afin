@@ -81,28 +81,60 @@ def make_figure():
 
     centroid = [X.mean(), Y.mean(), Z.mean()]
     
-    return [X, Y, Z, d, centroid ]
+    return [x, y, z, d, centroid ]
+
+def diameter_optimo(X, Y, Z):
+    '''
+    Calcula el diametro maximo entre 2 ptos de la figura con la ayuda de ConvexHull para hacer óptimo el cálculo
+
+    Returns a float object 
+
+    Arguments:
+        X -> list (componentes x de cada vertice de la envolvente convexa)
+        Y -> list (componentes y de cada vertice de la envolvente convexa) 
+        Z -> list (componentes z de cada vertice de la envolvente convexa)
+    '''
+    x0 = X.reshape(-1)
+    y0 = Y.reshape(-1)
+    z0 = Z.reshape(-1)
 
 
+    H = np.array([x0,y0,z0]).T
+    hull = ConvexHull(H)
 
-def diameter(x, y, z):
+    # Calcular las distancias entre los puntos en la envolvente convexa
+    distances = []
+    for simplex in hull.simplices:
+        p1 = H[simplex[0]]
+        p2 = H[simplex[1]]
+
+        distance = np.linalg.norm(p1 - p2)
+        distances.append(distance)
+
+    # Encontrar la distancia máxima
+    max_distance = max(distances)
+
+    return max_distance
+
+
+def diameter(X, Y, Z):
     '''
     Calcula el diametro maximo entre 2 ptos de la figura
 
     Returns a float object 
 
     Arguments:
-        x -> list (componentes x de cada vertice de la envolvente convexa)
-        y -> list (componentes y de cada vertice de la envolvente convexa) 
-        z -> list (componentes z de cada vertice de la envolvente convexa)
+        X -> list (componentes x de cada vertice de la envolvente convexa)
+        Y -> list (componentes y de cada vertice de la envolvente convexa) 
+        Z -> list (componentes z de cada vertice de la envolvente convexa)
     '''
-    n = len(x)
+    N = len(X)
     max_dist = 0
 
-    for i in range(n):
-        for j in range(i + 1, n - 1):
+    for i in range(N):
+        for j in range(i + 1, N - 1):
             
-            dist = (x[i] - x[j]) ** 2 + (y[i] - y[j]) ** 2 + (z[i] - z[j]) ** 2 # p1 =[x[i], y[i], z[i]] y p2 =[x[j], y[j], z[j]]
+            dist = (X[i] - X[j]) ** 2 + (Y[i] - Y[j]) ** 2 + (Z[i] - Z[j]) ** 2 # p1 =[x[i], y[i], z[i]] y p2 =[x[j], y[j], z[j]]
 
             if max_dist < dist:
                 max_dist = dist
@@ -111,9 +143,9 @@ def diameter(x, y, z):
 
 
 
-def transf_2D_1(x, y, z, M, v= np.array([0, 0, 0])):
+def transf_2D_1(x, y, z, M, vs):
     '''
-    Calcula el diametro maximo entre 2 ptos de la figura
+    Realiza la transformacion pedida con la matriz de rotacion y el vector de traslacion
 
     Returns a float object 
 
@@ -123,9 +155,9 @@ def transf_2D_1(x, y, z, M, v= np.array([0, 0, 0])):
         z -> list (componentes z de cada vertice de la envolvente convexa menos su centroide)
         M -> array (matriz M de rotacion)
         v -> array (vector de transformacion)
-
     '''    
     n = len(x)
+    v = [vs[0], vs[0], vs[len(vs)-1]]
 
     xt = np.zeros(shape= (n, n))
     yt = np.zeros(shape= (n, n))
@@ -141,44 +173,71 @@ def transf_2D_1(x, y, z, M, v= np.array([0, 0, 0])):
     return xt, yt, zt
 
 
-##  CÁLCULO DE LA ENVOLVENTE CONVEXA, SUS VÉRTICES Y EL DIÁMETRO MAYOR.  #  
 
 
+def rotation_matrix(t, thetas):
 
+    # Creamos la matriz M de rotacion para cada theta
+    cos = math.cos(thetas[len(thetas)-1] * t) #math.cos(3 * math.pi * t)
+    sin = math.sin(thetas[len(thetas)-1] * t)
+    M = np.array([[cos, -sin, 0], [sin, cos, 0], [0, 0, 1]])
 
-
+    return M
 
 ##   CREACIÓN DEL GIF.  ##
-def animate1(t, X, Y, Z, d, centroid):
+def animate1(t, X0, Y0, Z0, thetas, vs, centroid, ax):
 
-    # Creamos la matriz M de rotacion con theta 3*pi
-    coseno = math.cos(3 * math.pi * t)
-    seno = math.sin(3 * math.pi * t)
-    M = np.array([[coseno, -seno, 0], [seno, coseno, 0], [0, 0, 1]])
+    M = rotation_matrix(t, thetas)
+
+    v = np.array([vs[0], vs[0], vs[len(vs)-1]]) * t  # v = np.array( [0, 0, d] * t)
+
+    X, Y, Z = transf_2D_1(X0 - centroid[0], Y0 - centroid[1], Z0 - centroid[2], M, v)
+
 
     # Translacion v = (0, 0, d)
-    v = np.array([0, 0, d]) * t
+    # v = np.array([0, 0, d]) * t
 
-    ax.clear()
+    #ax.clear()
     ax = plt.axes(xlim=(0,400), ylim=(0,400), projection='3d')
 
     ax.set_xlim(-60, 60)
     ax.set_ylim(-60, 60)
     ax.set_zlim(-60, 250)
-
-    x, y, z = transf_2D_1(X - centroid[0], Y - centroid[1], Z - centroid[2], M= M, v= v)
+    ax.set_title("Rotación y Traslación ejemplo predefinido")
+       
+    ax.contour(X, Y, Z, 15, extend3d= True, cmap= plt.cm.get_cmap('viridis'), zorder= 1)
     
-    ax.contour(x, y, z, 15, extend3d= True, cmap= plt.cm.get_cmap('viridis'))
-    
-    return ax
 
-def create_animation_1(X, Y, Z, )
+
+def make_gif(X, Y, Z, n_frames, thetas, vs, centroid):
 
     fig = plt.figure(figsize=(6,6))
-    ani = animation.FuncAnimation(fig, animate1, np.arange(0, 1, 0.025), fargs=[X, Y, Z, d, centroid, ax], interval=20)
 
-    ani.save("apartado1.gif", fps = 10)  
+    ax = fig.add_subplot(1, 1, 1, projection='3d')
 
+    #ax.view_init(elev=20, azim=-45)
+
+    gif = animation.FuncAnimation(fig, animate1, frames= range(n_frames), fargs=[X, Y, Z, thetas, vs, centroid, ax], interval= 10)
+
+    return gif
+    
+
+def show_fig_chosen(X, Y, Z):
+    # Figura para rotar y trasladar:
+    fig = plt.figure()
+    ax = plt.axes(projection='3d')
+    plt.title("Figura elegida para rotar y trasladar")
+
+    
+    cset = ax.contour(X, Y, Z, 15, extend3d=True,cmap = cm.coolwarm) 
+    ax.clabel(cset, fontsize=9, inline=1)
+
+    plt.show()
+
+
+    centroid = [X.mean(), Y.mean(), Z.mean()]
+    
+    return [X, Y, Z, centroid ]
 
 
 ############################################################################    
@@ -195,8 +254,20 @@ def main():
     una rotación de θ = 3π y una translación con v = (0, 0, d), donde d es 
     el diámetro mayor de S.
     '''
+    X, Y, Z = axes3d.get_test_data(0.05)        # Ejemplo utilizado https://matplotlib.org/stable/api/_as_gen/mpl_toolkits.mplot3d.axes3d.get_test_data.html
+    
+    d = diameter_optimo(X, Y, Z)                # Calculamos el diametro
+    centroid = [X.mean(), Y.mean(), Z.mean()]   # Calculamos el centroide
+    
+    theta = [0, 3 * np.pi]                      # Datos
+    v = [0, 0, d]                               # Datos
 
-
+    # Creamos el gif
+    n_frames = 100      
+    thetas = np.linspace(theta[0], theta[1], n_frames)        # Malla de theta's
+    vs = np.linspace(0, v[2], n_frames)                       # Malla de v's
+    gif = make_gif(X, Y, Z, n_frames, thetas, vs, centroid)
+    gif.save("gif_ej1.gif", fps = 10)  
 
 
     print('APARTADO II)')
