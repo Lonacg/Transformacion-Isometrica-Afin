@@ -156,9 +156,32 @@ def max_diameter1(X, Y, Z):
     return d
 
 
+def show_fig(X, Y, Z):
+    '''
+    Representa graficamente la figura escogida para transformar.
+
+    Returns
+        plot image
+
+    Arguments:
+        X -> matriz que contiene las coordenadas de los puntos en el eje x
+        Y -> matriz que contiene las coordenadas de los puntos en el eje y
+        Z -> matriz que contiene los valores de la funcion en esos puntos
+    ''' 
+    fig = plt.figure(figsize=plt.figaspect(0.5))
+    ax = fig.add_subplot(1, 1, 1, projection='3d')
+    
+    ax.plot_surface(X, Y, Z, rstride=1, cstride=1, cmap=cm.coolwarm, linewidth=0, antialiased=False)
+
+    ax.set_title('Ejemplo de imagen en 3D para transformar')
+    ax.set_xlabel('Eje X')
+    ax.set_ylabel('Eje Y')
+    plt.show()
+
+
 def animate1(t, X0, Y0, Z0, thetas, vs, v, ax):
     '''
-    Genera las nuevas posiciones para cada frame del gif.
+    Genera la nueva imagen para cada frame del gif.
 
     Returns
         X -> new matrix position
@@ -190,6 +213,7 @@ def animate1(t, X0, Y0, Z0, thetas, vs, v, ax):
     ax.set_zlim(-5, 15)
      
     ax.plot_surface(X, Y, Z, rstride=1, cstride=1, cmap=cm.coolwarm, linewidth=0, antialiased=False)    
+
 
 def make_gif1(X, Y, Z, n_frames, thetas, vs, v):
     '''
@@ -299,30 +323,31 @@ def get_centroid(X, Y):
         cy -> float
 
     Arguments:
-        x  -> list
-        y  -> list
-        z  -> list
-        x0 -> list with restriction a
-        y0 -> list with restriction a
-        z0 -> list with restriction a
+        X -> matriz que contiene las coordenadas de los puntos en el eje x
+        Y -> matriz que contiene las coordenadas de los puntos en el eje y
     ''' 
-    cx=np.mean(X)
-    cy=np.mean(Y)
+    cx = np.mean(X)
+    cy = np.mean(Y)
 
     return cx, cy
 
 
 def show_hurricane(x, y, z, x0, y0, z0):
     '''
-    Obtiene las coordenadas de la imagen dada, con la restriccion de que 
-    el color azul sea  a >= 100.
+    Representa gráficamente la imagen hurricane-isabel.png a través de 
+    las funciones contourf y scatter de la librería matplotlib, situando 
+    en cada una de ellas el centroide. 
 
     Returns
         plot 2 images
 
     Arguments:
-        img -> imagen
-        a   -> int
+        x  -> list
+        y  -> list
+        z  -> list
+        x0 -> list with restriction a
+        y0 -> list with restriction a
+        z0 -> list with restriction a
     ''' 
     cx, cy = get_centroid(x0, y0)
 
@@ -356,7 +381,7 @@ def show_hurricane(x, y, z, x0, y0, z0):
 
 def animate2(t, X0, Y0, Z0, thetas, vs, v, ax):
     '''
-    Genera las nuevas posiciones para cada frame del gif.
+    Genera la nueva imagen para cada frame del gif.
 
     Returns
         X -> new matrix position
@@ -440,6 +465,8 @@ def main():
     d = max_diameter1(X, Y, Z)                   # Calculamos el diametro (14.14)
     #centroid = [X.mean(), Y.mean(), Z.mean()]   # Calculamos el centroide
     
+    show_fig(X, Y, Z)
+
     theta = [0, 3 * np.pi]                      # Datos
     v = [0, 0, d]                               # Datos
 
@@ -464,7 +491,7 @@ def main():
     '''
     a = 100                                     # Datos
     img = io.imread('hurricane-isabel.png')     # Datos
-
+    '''
     # Visualizacion del huracan y su centroide
     x, y, z, x0, y0, z0 = get_coord(img, a)
 
@@ -486,7 +513,7 @@ def main():
     gif = make_gif2(x0, y0, z0, n_frames, thetas, vs, v)
     gif.save("gif_ej2.gif", fps = 10)  
     plt.show()
-    
+    '''
 
 if __name__ == '__main__':
     main()
