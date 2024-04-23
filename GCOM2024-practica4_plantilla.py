@@ -40,8 +40,9 @@ fig = plt.figure(figsize=plt.figaspect(0.5))
 ax = fig.add_subplot(1, 1, 1, projection='3d')
 
 # plot a 3D surface like in the example mplot3d/surface3d_demo
+ # malla de y
 X = np.arange(-5, 5, 0.1)   # malla de x
-Y = np.arange(-5, 5, 0.1)   # malla de y
+Y = np.arange(-5, 5, 0.1)  
 X, Y = np.meshgrid(X, Y)    # construye la malla 2 dimensional
 
 
@@ -200,8 +201,10 @@ z0 = zz[zz>100]/zz.max()
 col = plt.get_cmap("viridis")(np.array(z0))
 
 fig = plt.figure(figsize=(5,5))
+
 ax = fig.add_subplot(1, 2, 1)
 plt.contourf(x,y,z,cmap = plt.cm.get_cmap('viridis'), levels=np.arange(100,255,2))
+
 ax = fig.add_subplot(1, 2, 2)
 plt.scatter(x0,y0,c=col,s=0.1)
 plt.show()

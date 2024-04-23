@@ -7,6 +7,7 @@ Alumna: Laura Cano Gómez (U2)
 
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib import animation, cm
 from mpl_toolkits.mplot3d import axes3d
 from skimage import io
 from scipy.spatial import ConvexHull, convex_hull_plot_2d
@@ -14,50 +15,47 @@ from matplotlib import animation, cm
 
 
 
-
-############################################################################    
+############################################################################
 #  Enunciado
 ############################################################################
 
 '''
-
 Dado un sistema con N elementos, 
-S = {aj , (xj , yj , . . . )}Nj = 1, consideramos la transformación
-isométrica afín correspondiente a una rotación R(xy) θ aplicada en torno 
-al centroide del sistema, y una translación v = (v1, v2, . . . ). Considera 
-para ello la métrica euclídea.
+S = {aj , (xj , yj , . . . )} desde j = 1 hasta N, consideramos la 
+transformacion isometrica afin correspondiente a una rotación R(xy) theta 
+aplicada en torno al centroide del sistema, y una translacion 
+v = (v1, v2, ... ). Considera para ello la metrica euclidea.
 
-i) Genera una figura en 3 dimensiones (puedes utilizar la figura 1 de la 
-plantilla) y realiza una animación de una familia paramétrica continua que 
-reproduzca desde la identidad hasta la transformación simultánea de una 
-rotación de θ = 3π y una translación con v = (0, 0, d), donde d es el 
-diámetro mayor de S. [1.0 punto]
+i)Genera una figura en 3 dimensiones (puedes utilizar la figura 1 de la 
+plantilla) y realiza una animacion de una familia parametrica continua 
+que reproduzca desde la identidad hasta la transformacion simultanea de 
+una rotacion de theta = 3*pi y una translacion con v = (0, 0, d), 
+donde d es el diametro mayor de S.  [1.0 punto]
 
 ii) Dado el sistema representado por la imagen digital 
-‘hurricane-isabel.png’, considera el subsistema σ dado por el tercer color 
-correspondiente al azul ∈ [0, 254], pero restringiendo para azul ≥ 100. 
-¿Dónde se sitúa el centroide? Realiza la misma transformación que en el 
-apartado anterior, con θ = 6π y v = (d, d, 0), donde d es el diámetro mayor 
-de σ.
-
+'hurricane-isabel.png', considera el subsistema sigma dado por el tercer 
+color correspondiente al azul en [0, 254], pero restringiendo para 
+azul >= 100. ¿Donde se situa el centroide? Realiza la misma transformación 
+que en el apartado anterior, con theta = 6*pi y v = (d, d, 0), donde d es 
+el diametro mayor de sigma. [1.5 puntos]
 '''
 
 
-############################################################################ 
+############################################################################
 # Funciones comunes: Apartados 1 y 2.
-############################################################################ 
+############################################################################
 
 def diameter_aux(X, Y, Z):
     '''
     Calcula la distancia maxima entre 2 ptos de la figura (funcion auxiliar 
-    de max_diameter())
+    de max_diameter()).
 
     Returns a float object 
 
     Arguments:
         X -> matriz que contiene las coordenadas de los puntos en el eje x
         Y -> matriz que contiene las coordenadas de los puntos en el eje y
-        Z -> matriz que contiene los valores de la función en esos puntos
+        Z -> matriz que contiene los valores de la funcion en esos puntos
     '''
     N = len(X)
     max_dist = 0
@@ -76,7 +74,7 @@ def diameter_aux(X, Y, Z):
 def rotation(X0, Y0, theta):          # theta es theta[t]
     '''
     Transforma las matrices de posicion X e Y con una rotacion de angulo 
-    theta (equiespaciado en el intervalo en funcion de cada frame)
+    theta (equiespaciado en el intervalo en funcion de cada frame).
 
     Returns
         X -> new matrix position
@@ -98,7 +96,7 @@ def rotation(X0, Y0, theta):          # theta es theta[t]
 def translation(X0, Y0, Z0, t, v):    # t es v[t]
     '''
     Transforma las matrices de posicion X, Y y Z con una traslacion v 
-    (equiespaciado en el intervalo en funcion de cada frame)
+    (equiespaciado en el intervalo en funcion de cada frame).
 
     Returns
         X -> new matrix position
@@ -133,16 +131,15 @@ def translation(X0, Y0, Z0, t, v):    # t es v[t]
 def max_diameter1(X, Y, Z):
     '''
     Calcula el diametro maximo entre 2 ptos de la figura con la ayuda de 
-    ConvexHull para hacer óptimo el cálculo
+    ConvexHull para hacer optimo el calculo.
 
     Returns a float object 
 
     Arguments:
         X -> matriz que contiene las coordenadas de los puntos en el eje x
         Y -> matriz que contiene las coordenadas de los puntos en el eje y
-        Z -> matriz que contiene los valores de la función en esos puntos
+        Z -> matriz que contiene los valores de la funcion en esos puntos
     '''
-
     x0, y0, z0 = X.reshape(-1), Y.reshape(-1), Z.reshape(-1)
 
     H = np.array([x0,y0,z0]).T
@@ -184,16 +181,15 @@ def animate1(t, X0, Y0, Z0, thetas, vs, v, ax):
 
     # Ploteamos el frame 
     ax.clear()
-    ax.set_title("Rotación y Traslación ejemplo predefinido")
+    ax.set_title("Rotación y Traslación ejemplo plantilla")
     ax.set_xlabel('Eje X')
     ax.set_ylabel('Eje Y')
     ax.set_zlabel('Eje Z')
-    ax.set_xlim(-50, 50)
-    ax.set_ylim(-50, 50)
-    ax.set_zlim(-50, 250)
+    ax.set_xlim(-10, 10)
+    ax.set_ylim(-10, 10)
+    ax.set_zlim(-5, 15)
      
-    ax.contour(X, Y, Z, 15, extend3d= True, cmap= plt.cm.get_cmap('viridis'), zorder= 1)
-    
+    ax.plot_surface(X, Y, Z, rstride=1, cstride=1, cmap=cm.coolwarm, linewidth=0, antialiased=False)    
 
 def make_gif1(X, Y, Z, n_frames, thetas, vs, v):
     '''
@@ -212,7 +208,7 @@ def make_gif1(X, Y, Z, n_frames, thetas, vs, v):
         vs       -> array
         v        -> list
     ''' 
-    fig = plt.figure(figsize=(6, 8))
+    fig = plt.figure(figsize=(6, 6))
 
     ax = fig.add_subplot(1, 1, 1, projection='3d')
 
@@ -230,16 +226,15 @@ def make_gif1(X, Y, Z, n_frames, thetas, vs, v):
 def max_diameter2(X, Y):
     '''
     Calcula el diametro maximo entre 2 ptos de la figura con la ayuda de 
-    ConvexHull para hacer óptimo el cálculo.
+    ConvexHull para hacer optimo el calculo.
 
     Returns a float object 
 
     Arguments:
         X -> matriz que contiene las coordenadas de los puntos en el eje x
         Y -> matriz que contiene las coordenadas de los puntos en el eje y
-        Z -> matriz que contiene los valores de la función en esos puntos
-    '''
-               
+        Z -> matriz que contiene los valores de la funcion en esos puntos
+    '''         
     x0, y0 = X.reshape(-1), Y.reshape(-1)
 
     H = np.array([x0,y0]).T
@@ -288,9 +283,9 @@ def get_coord(img, a):
     zz = np.asarray(z).reshape(-1)      
 
     # Nos quedamos con los azules >= a = 100
-    x0 = xx[zz > a]
-    y0 = yy[zz > a] 
-    z0 = zz[zz > a] / zz.max()  # Hacemos / zz.max() para normalizar los datos
+    x0 = xx[zz >= a]
+    y0 = yy[zz >= a] 
+    z0 = zz[zz >= a] / zz.max()  # Hacemos / zz.max() para normalizar los datos
 
     return x, y, z, x0, y0, z0
 
@@ -320,7 +315,7 @@ def get_centroid(X, Y):
 def show_hurricane(x, y, z, x0, y0, z0):
     '''
     Obtiene las coordenadas de la imagen dada, con la restriccion de que 
-    el color azul sea  a >=100.
+    el color azul sea  a >= 100.
 
     Returns
         plot 2 images
@@ -336,9 +331,9 @@ def show_hurricane(x, y, z, x0, y0, z0):
     ax = fig.add_subplot(1, 1, 1)
     
     plt.contourf(x, y, z, cmap= plt.cm.get_cmap('viridis'), levels=np.arange(100,255,2))
-    ax.plot([cx], [cy], "ko", label="Centroid")    # Pintamos el centroide
-    
-    ax.set_title("Hurricane Isabel with Contourf")
+    ax.plot([cx], [cy], 'ko', label= 'Centroid (291.18, 466.96)')    # Pintamos el centroide
+
+    ax.set_title('Hurricane Isabel with Contourf')
     ax.set_xlabel('Eje X')
     ax.set_ylabel('Eje Y')
     ax.legend()
@@ -350,9 +345,9 @@ def show_hurricane(x, y, z, x0, y0, z0):
     ax = fig.add_subplot(1, 1, 1)
     
     plt.scatter(x0, y0, c= plt.get_cmap("viridis")(np.array(z0)),s= 0.1)
-    ax.plot([cx], [cy], "ko", label="Centroid")    # Pintamos el centroide
+    ax.plot([cx], [cy], 'ko', label= 'Centroid (291.18, 466.96)')    # Pintamos el centroide
     
-    ax.set_title("Hurricane Isabel with Scatter")
+    ax.set_title('Hurricane Isabel with Scatter')
     ax.set_xlabel('Eje X')
     ax.set_ylabel('Eje Y')
     ax.legend()
@@ -412,7 +407,7 @@ def make_gif2(X, Y, Z, n_frames, thetas, vs, v):
         vs       -> array
         v        -> list
     ''' 
-    fig = plt.figure(figsize=(6,8))
+    fig = plt.figure(figsize=(6,6))
 
     ax = fig.add_subplot(1, 1, 1, projection='3d')
 
@@ -431,18 +426,18 @@ def main():
     print('APARTADO I)')
     '''
     Genera una figura en 3 dimensiones (puedes utilizar la figura 1 de la 
-    plantilla) y realiza una animación de una familia paramétrica continua 
-    que reproduzca desde la identidad hasta la transformación simultánea de 
-    una rotación de θ = 3π y una translación con v = (0, 0, d), donde d es 
-    el diámetro mayor de S.
+    plantilla) y realiza una animacion de una familia parametrica continua 
+    que reproduzca desde la identidad hasta la transformacion simultanea de 
+    una rotacion de theta = 3*pi y una translacion con v = (0, 0, d), 
+    donde d es el diametro mayor de S. 
     '''
-    
-    X, Y, Z = axes3d.get_test_data(0.1)        # Ejemplo utilizado https://matplotlib.org/stable/api/_as_gen/mpl_toolkits.mplot3d.axes3d.get_test_data.html
-    # X es una matriz que contiene las coordenadas de los puntos en el eje x
-    # Y es una matriz que contiene las coordenadas de los puntos en el eje y
-    # Z es una matriz que contiene los valores de la función en esos puntos
+    # Datos X, Y, Z del ejemplo de la plantilla
+    X = np.linspace(-5, 5, 100)                 # Malla de x
+    Y = np.linspace(-5, 5, 100)                 # Malla de y
+    X, Y = np.meshgrid(X, Y)                    # Construye la malla 2 dimensional
+    Z = np.sin(-np.sqrt(X**2/2 + Y**2/4))       
 
-    d = max_diameter1(X, Y, Z)                   # Calculamos el diametro (159.65)
+    d = max_diameter1(X, Y, Z)                   # Calculamos el diametro (14.14)
     #centroid = [X.mean(), Y.mean(), Z.mean()]   # Calculamos el centroide
     
     theta = [0, 3 * np.pi]                      # Datos
@@ -461,11 +456,11 @@ def main():
     print('APARTADO II)')
     '''
     Dado el sistema representado por la imagen digital 
-    ‘hurricane-isabel.png’, considera el subsistema sigma dado por el tercer 
-    color correspondiente al azul ∈ [0, 254], pero restringiendo para 
-    azul ≥ 100. ¿Dónde se sitúa el centroide? Realiza la misma 
-    transformación que en el apartado anterior, con θ = 6π y v = (d, d, 0), 
-    donde d es el diámetro mayor de σ.
+    'hurricane-isabel.png', considera el subsistema sigma dado por el tercer 
+    color correspondiente al azul en [0, 254], pero restringiendo para 
+    azul >= 100. ¿Donde se situa el centroide? Realiza la misma transformacion 
+    que en el apartado anterior, con theta = 6*pi y v = (d, d, 0), donde d es 
+    el diametro mayor de sigma.
     '''
     a = 100                                     # Datos
     img = io.imread('hurricane-isabel.png')     # Datos
@@ -491,8 +486,7 @@ def main():
     gif = make_gif2(x0, y0, z0, n_frames, thetas, vs, v)
     gif.save("gif_ej2.gif", fps = 10)  
     plt.show()
-
+    
 
 if __name__ == '__main__':
     main()
-
