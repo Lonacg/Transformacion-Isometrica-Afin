@@ -185,7 +185,7 @@ y = np.arange(0,xyz[1],1)
 xx,yy = np.meshgrid(x, y)
 xx = np.asarray(xx).reshape(-1)
 yy = np.asarray(yy).reshape(-1)
-z  = img[:,:,2]
+z  = img[:,:,2]                     # Seleccionamos la coordenada 2 que corresponde al color azul
 z = np.transpose(z)
 zz = np.asarray(z).reshape(-1)
 
